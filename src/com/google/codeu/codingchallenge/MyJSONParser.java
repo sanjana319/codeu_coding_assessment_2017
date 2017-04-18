@@ -21,85 +21,91 @@ final class MyJSONParser implements JSONParser {
   @Override
   public JSON parse(String in) throws IOException {
     // TODO: implement this
-		JSON j = new MyJSON(); //the object to be returned 
-		String s = in; //temp string to mess with and check for input
-		String tempchar, tempkey, tempvalue; //temp stuff for s 
+    JSON j = new MyJSON();
+    int last = in.length() - 1;
+    if(validString(in) == true || validObj(in) == true){
+    	int first = in.indexOf('{');
+    	String s = in.substring(first++,last).trim();
+    	int slength = s.length();
+    	if(slength == 0){
+    		return j;
+    	}
+    	else{
+    		if(s.contains(':') == false){
+    			throw new IOException();
+    		}
 
-		int index = 0;
-		int end, next; 
-		//use these guys to parse through the input in
+    		int c = s.indexOf(':'); //find index of the colon in input
+    		String input = s.substring(0, c).trim(); //trim input for first half
+    		int ilength = input.length() - 1;
 
-		/*String temp = in.trim();
-		String first = temp.charAt(0);
-		String last = temp.charAt(temp.length() - 1);
+    		if(input.charAt(0) != '\"' || input.chatAt(ilength) != '\"'){
+    			throw new IOException();
+    		}
+    		else{
+    			input = input.substring(1, ilength);
+    			String val = s.substring(c++).trim();
+    		}
 
-		if(!first.equals("{") || !last.equals("}")){
-			throw new IOException; 
-		}*/
+    		if(validObj(val)){
+    			j.setObject(input, parse(val));
+    		}
 
-		for(int i = 0; i < in.length(); i++){ 
-			tempchar = in.substring(i, i+1); //checking if the first character of in is valid
-			if(tempchar.equals("{")){
-				end = in.indexOf("}")--; //if it has a {, then find the index of } and assign it
-				s = in.substring(i++);
-				
-				while(index < s.length()){
-					tempchar = s.substring(index, index++);
-					if(tempchar.equals(" ")){
-						index++;
-					} //parse through the input 
+    		else{
+    			String[] objects = s.split(",");
+    			for(String str: objects){
+    				str = str.trim();
+    				strColon = str.indexOf(':');
+    				if(str.contains(':') == false){
+    					throw new IOException();
+    				}
 
-					 //break if you reach } bc you've reached the end
-
-					if(tempchar.equals("}")){break;}
-
-					else if(tempchar.equals("\"")){
-						s = s.substring(index++);
-						index = s.indexOf("\"");
-						tempkey = s.substring(0, index);
-						s = s.substring(index++);
-						index = 0;
-						next = s.indexOf("\"");
-
-						if(s.contains(",") == true){
-							index = s.indexOf(",");
-							s = s.substring(index++);
-							index = 0;
-						}
-
-						else{
-							in = "";
-							break;
-						}
-
-						String c = s.substring(index, next);
-
-						if(c.contains("{")){
-							int endval = s.indexOf("}");
-							String val = s.substring(0, endval+++);
-							JSON v = parse(val);
-							j.setObject(key, v);
-							s = s.substring(endval++);
-						}
-
-						else{
-							s=s.substring(next++);
-							index = s.indexOf("\"");
-							tempvalue = s.substring(0, index);
-							j.setString(key, value);
-						}
-
-
-
-						if(!s.contains(":")){
-							throw new IOException;
-						}
-					}
-
-					}
+				String strName = str.substring(0, strColon);
+				int strNameL = strName.length() - 1;
+				if(!validString(strName)){
+					throw new IOException();
 				}
-			}
+
+				strName = strName.substring(1, strNameL);
+				String strVal = str.substring(strColon+ 1).trim();
+				int strValL = strVal.length() - 1;
+
+
+				if(!validString(strVal)){
+					throw new IOException();
+				}
+
+				strVal = strVal.substring(1, strValL).trim();
+				j.setString(strName, strVal);
+    			}
+    		}
+    	}
+    }
+
+    else{
+    	throw new IOException();
+    }
+
+    return j;
+	} //end parse
+
+	//check if string is valid for JSON-lite
+	public boolean validString(String str){
+		String firstCharacter = str.charAt(0);
+		String lastCharacter = str.charAt(str.length() - 1);
+		if(firstCharacter.equals('\"') && lastCharacter.equals('\"'){
+			return true;
 		}
-		return j;
+		return false;
+	}
+
+	//check if string is a valid JSON object
+	public boolean validObj(String str){
+		String firstCharacter = str.charAt(0);
+		String lastCharacter = str.charAt(str.length() - 1);
+		if(firstCharacter.equals('{') && lastCharacter.equals('}')){
+			return true;
+		}
+		return false;
 	}
   }
