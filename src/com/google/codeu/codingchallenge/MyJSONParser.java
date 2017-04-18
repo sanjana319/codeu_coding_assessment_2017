@@ -36,7 +36,7 @@ final class MyJSONParser implements JSONParser {
     		}
 
     		int c = s.indexOf(':'); //find index of the colon in input
-    		String input = s.substring(0, c).trim(); //trim input for first half
+    		String input = s.substring(0, c).trim(); //trim input for first half of string
     		int ilength = input.length() - 1;
 
     		if(input.charAt(0) != '\"' || input.chatAt(ilength) != '\"'){
@@ -91,21 +91,38 @@ final class MyJSONParser implements JSONParser {
 
 	//check if string is valid for JSON-lite
 	public boolean validString(String str){
-		String firstCharacter = str.charAt(0);
+		str = str.trim(); //trim whitespace
+		int strLength = str.length();
+		String firstCharacter = str.charAt(0); //check if it's valid by looking at first and last characters.
 		String lastCharacter = str.charAt(str.length() - 1);
-		if(firstCharacter.equals('\"') && lastCharacter.equals('\"'){
-			return true;
+
+		if(strLength < 2){
+			return false;
 		}
-		return false;
+		
+		if(firstCharacter.equals('\"') == false && lastCharacter.equals('\"') == false{
+			return false;
+		}
+		
+		return true;
 	}
 
 	//check if string is a valid JSON object
 	public boolean validObj(String str){
+		str = str.trim();
+		int length =  str.length();
+		int colon = str.indexOf(':');
+		
 		String firstCharacter = str.charAt(0);
 		String lastCharacter = str.charAt(str.length() - 1);
-		if(firstCharacter.equals('{') && lastCharacter.equals('}')){
-			return true;
+
+		if(length < 2){
+			return false;
 		}
-		return false;
+		
+		if(firstCharacter.equals('{') == false && lastCharacter.equals('}') == false){
+			return false;
+		}
+		return true;
 	}
   }
