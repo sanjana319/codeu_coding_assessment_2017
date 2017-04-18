@@ -78,6 +78,10 @@ final class MyJSONParser implements JSONParser {
 				strVal = strVal.substring(1, strValL).trim();
 				j.setString(strName, strVal);
     			}
+
+    			if(!escapeChars(in)){
+    				throw new IOException();
+    			}
     		}
     	}
     }
@@ -122,6 +126,21 @@ final class MyJSONParser implements JSONParser {
 		
 		if(firstCharacter.equals('{') == false && lastCharacter.equals('}') == false){
 			return false;
+		}
+		return true;
+	}
+
+	public boolean escapeChars(String str){
+		for(int i =0; i < str.length() - 1; i++){
+			char c = str.charAt(i);
+			if(c == '\\'){
+				char next = str.charAt(i++);
+				if(next != 'n'){
+					if(next != 't'){
+						return false;
+					}
+				}
+			}
 		}
 		return true;
 	}
